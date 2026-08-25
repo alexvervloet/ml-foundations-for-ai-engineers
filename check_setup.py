@@ -46,7 +46,8 @@ def main() -> int:
     for package, expected in EXPECTED_VERSIONS.items():
         try:
             observed = version(package)
-            if observed != expected:
+            public_version = observed.split("+", maxsplit=1)[0]
+            if public_version != expected:
                 errors.append(f"{package} must be {expected}, found {observed}")
             else:
                 print(f"  {package}: {observed} OK")
