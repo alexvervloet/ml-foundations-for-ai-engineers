@@ -61,3 +61,44 @@
   mutation survived.
 - **Next time:** Pair metamorphic scaling checks with one independently calculated
   baseline. The KV test now requires 40 fp16 elements to consume exactly 80 bytes.
+
+## Measure bytes before the convenience conversion
+
+- **Expected:** `quantize_symmetric` reported the source size of whatever the caller
+  handed it, so the capstone's payload comparison was a fair one.
+- **Actual:** The function converted its input to float64 on the first line and then
+  read `nbytes` from that copy. Every float32 caller was told it held twice the bytes
+  it really did. The capstone advertised 45504 source bytes against a 5824-byte int8
+  payload when the model's fp32 weights occupy 22752, turning a 3.9x reduction into a
+  claimed 7.8x. The unit tests missed it because they all passed float64 arrays, where
+  the wrong reading and the right one are identical.
+- **Next time:** When a function reports a property of its input, read that property
+  before any internal conversion. Test the accounting with a dtype that differs from
+  the working dtype, or the test cannot tell the two apart.
+
+## A separable calibration split cannot choose a temperature
+
+- **Expected:** Fitting temperature on a held-out calibration split would demonstrate
+  calibration, with the reported ECE drop as the result.
+- **Actual:** The trained model classifies every calibration row correctly, so
+  cross-entropy falls monotonically as temperature approaches zero and the smallest
+  grid candidate always wins. The reported `T=0.50` was the grid floor, not a fitted
+  value, and extending the grid downward drives held-out ECE to 0.0 while meaning
+  nothing. The lesson's own example had the mirror-image problem: its winner sat on
+  the top end of the grid, which happened to be a real minimum, but the grid could not
+  have shown that.
+- **Next time:** Check whether a grid-search winner sits on an endpoint before
+  reporting it. `fit_temperature` now returns `on_grid_boundary`, the example grid
+  extends past its winner, and the capstone prints `grid floor, unresolved` instead of
+  presenting a truncation artifact as a calibration result.
+
+## Match the series chapter title convention
+
+- **Expected:** A descriptive TEXTBOOK.md title was enough, since the parent series
+  table supplies the chapter number and name.
+- **Actual:** Every other dive titles the file `# Chapter N: <Title>`. This one used a
+  bare name, so the parent linked readers to chapter 24, "The Numeric Contracts
+  Beneath the Model", and they landed on a page whose heading said something else.
+- **Next time:** Copy the heading straight from the parent TEXTBOOK.md row when
+  creating a dive, before writing any body text.
+
