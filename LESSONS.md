@@ -116,3 +116,15 @@
   when a fix applies to a family of parameters, grep for every place that family is
   accepted rather than fixing the ones that came to mind.
 
+## Do not identify a NumPy type by its name
+
+- **Expected:** Checking `type(value).__name__ == "bool_"` would catch `numpy.bool_`
+  in the scalar optimizer module without importing NumPy into it.
+- **Actual:** NumPy 2 renamed the type, so `type(np.True_).__name__` is now `"bool"`
+  and the guard matched nothing. The test caught it, but only because it checked
+  `np.True_` alongside the Python `True`.
+- **Next time:** Identify a type with `isinstance`, not its name. Keeping one module
+  import-free was not worth a check that silently changes meaning with a dependency
+  release. `optimization.py` now imports NumPy for the same guard the other modules
+  use.
+
