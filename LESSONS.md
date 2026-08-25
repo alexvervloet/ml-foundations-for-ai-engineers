@@ -17,3 +17,11 @@
 - **Next time:** Create the environment with no network command attached. Run required
   downloads separately so a network failure has an unambiguous exit status and can be
   retried with the narrow package-install approval.
+
+## Build tensors from the array, not a list around it
+
+- **Expected:** The cross-entropy example would print only its five measured results.
+- **Actual:** Wrapping a NumPy array in a Python list before calling `torch.tensor`
+  triggered PyTorch's slow-construction warning.
+- **Next time:** Add the batch dimension in NumPy, then use `torch.from_numpy`. Run
+  every example alone and treat warnings as failures before its first commit.
