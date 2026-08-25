@@ -96,6 +96,18 @@ class ExperimentReport:
     reason: str
 
 
+SAVED_ACTIVATION_TENSORS_PER_LAYER = 6
+"""Model-width tensors this course counts as retained per token per layer.
+
+The six are the attention norm output, the merged attention heads, the attention
+residual sum, the feed-forward norm output, the feed-forward output, and the block
+output. Counting them is a deliberate simplification: the packed query-key-value
+projection is three times model width and the feed-forward hidden layer is twice it,
+and neither is included. The figure is a named component estimate, not a measurement
+of what PyTorch actually keeps alive.
+"""
+
+
 DEFAULT_REQUIREMENTS = ExperimentRequirements(
     maximum_final_loss=0.20,
     minimum_test_accuracy=0.95,
@@ -261,7 +273,12 @@ def run_experiment(
     logit_drift = float(np.mean(np.abs(test_logits - quantized_logits)))
 
     parameter_count = model.parameter_count
-    activation_elements = train.numel() * config.model_width * config.layers * 6
+    activation_elements = (
+        train.numel()
+        * config.model_width
+        * config.layers
+        * SAVED_ACTIVATION_TENSORS_PER_LAYER
+    )
     training_memory = estimate_training_memory(
         parameter_count, activation_elements
     )
