@@ -22,9 +22,10 @@ class CalibrationTests(unittest.TestCase):
         fitted = fit_temperature(
             calibration_logits,
             calibration_labels,
-            temperatures=(0.5, 1.0, 2.0, 4.0),
+            temperatures=(0.5, 1.0, 2.0, 4.0, 8.0),
         )
         self.assertGreater(fitted.temperature, 1.0)
+        self.assertFalse(fitted.on_grid_boundary)
         test_logits = np.array([[4.0, 0.0], [4.0, 0.0], [0.0, 4.0], [0.0, 4.0]])
         test_labels = np.array([0, 1, 1, 1])
         before = expected_calibration_error(test_logits, test_labels, bins=2)
@@ -32,6 +33,24 @@ class CalibrationTests(unittest.TestCase):
             test_logits, test_labels, bins=2, temperature=fitted.temperature
         )
         self.assertLess(after, before)
+
+    def test_a_separable_split_pins_the_fit_to_the_grid_floor(self) -> None:
+        separable_logits = np.array([[9.0, 0.0], [0.0, 9.0], [9.0, 0.0]])
+        separable_labels = np.array([0, 1, 0])
+        narrow = fit_temperature(
+            separable_logits, separable_labels, temperatures=(0.5, 1.0, 2.0)
+        )
+        wider = fit_temperature(
+            separable_logits, separable_labels, temperatures=(0.05, 0.5, 1.0, 2.0)
+        )
+
+        self.assertEqual(narrow.temperature, 0.5)
+        self.assertTrue(narrow.on_grid_boundary)
+        self.assertEqual(wider.temperature, 0.05)
+        self.assertTrue(wider.on_grid_boundary)
+        self.assertLess(
+            dict(wider.candidates)[0.05], dict(narrow.candidates)[0.5]
+        )
 
     def test_temperature_scaling_preserves_argmax(self) -> None:
         logits = np.array([[3.0, 1.0, -2.0], [0.0, 2.0, 1.0]])

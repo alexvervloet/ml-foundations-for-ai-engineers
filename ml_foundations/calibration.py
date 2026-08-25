@@ -23,10 +23,17 @@ FloatArray = NDArray[np.float64]
 
 @dataclass(frozen=True)
 class TemperatureFit:
-    """The chosen temperature and mean loss for every declared candidate."""
+    """The chosen temperature, every candidate loss, and whether the grid bound it.
+
+    ``on_grid_boundary`` is true when the winner is the smallest or largest declared
+    candidate. A grid search cannot see past its own endpoints, so a boundary winner
+    means the reported temperature may be an artifact of where the grid stopped
+    rather than a minimum the calibration data actually chose.
+    """
 
     temperature: float
     candidates: tuple[tuple[float, float], ...]
+    on_grid_boundary: bool
 
 
 def _labelled_logits(
@@ -101,6 +108,11 @@ def fit_temperature(
     The candidate grid must contain at least two unique, strictly increasing positive
     values. Exact loss ties choose the smaller temperature. The caller owns the split
     boundary and must not evaluate calibration on these same fitted rows.
+
+    The result flags a winner that sits on either grid endpoint. That happens whenever
+    loss is still falling at the edge, which a calibration split the model classifies
+    perfectly guarantees. Treat a flagged fit as unresolved and widen the grid, or say
+    plainly that the data could not choose a temperature.
     """
 
     matrix, targets = _labelled_logits(logits, labels)
@@ -119,4 +131,5 @@ def fit_temperature(
         ]
         candidates.append((temperature, float(np.mean(losses))))
     winner = min(candidates, key=lambda item: (item[1], item[0]))
-    return TemperatureFit(winner[0], tuple(candidates))
+    on_boundary = winner[0] in (normalized[0], normalized[-1])
+    return TemperatureFit(winner[0], tuple(candidates), on_boundary)
