@@ -210,6 +210,13 @@ on different test rows. The fitted temperature is 4.0 and held-out ECE changes f
 0.2320 to 0.0189. That result belongs to this small synthetic set and this binning rule.
 ECE can hide class and cohort errors, especially with small samples.
 
+A grid search cannot see past its own endpoints. If the winning temperature is the
+smallest or largest candidate, calibration loss was still falling when the grid ran out
+and the data did not really choose that value. `fit_temperature` reports this as
+`on_grid_boundary`, and the example prints it. A calibration split the model classifies
+perfectly guarantees a boundary fit, because loss then falls all the way toward zero
+temperature.
+
 ## 11. Quantization and reconstruction error
 
 ```bash
@@ -259,11 +266,18 @@ The current pinned run reports:
 ```text
 train loss:       2.6799 -> 0.0009
 test accuracy:    100.0%
-test ECE:         0.0564 -> 0.0109 at T=0.50
+test ECE:         0.0564 -> 0.0109 at T=0.50 (grid floor, unresolved)
 int8 logit drift: 0.023969 mean absolute
 weight payload:   22752 -> 5824 bytes
 verdict:          ready_for_lab_use
 ```
+
+The calibration line is the honest disappointment of this experiment. The model gets
+every calibration row right, so no temperature grid can choose a value: loss keeps
+falling toward zero temperature and the smallest candidate always wins. Widening the
+grid downward drives held-out ECE to 0.0 and means nothing. The report prints
+`grid floor, unresolved` and stores `temperature_on_grid_boundary` so the number is
+never read as a fitted result. The mechanism is worth learning here; the fit is not.
 
 The payload line compares the model's real fp32 parameter bytes with the logical int8
 payload plus one float64 scale per tensor. It is an accounting estimate on this tiny
