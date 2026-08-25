@@ -25,3 +25,12 @@
   triggered PyTorch's slow-construction warning.
 - **Next time:** Add the batch dimension in NumPy, then use `torch.from_numpy`. Run
   every example alone and treat warnings as failures before its first commit.
+
+## Use terminal-state names exactly as the code defines them
+
+- **Expected:** The large learning-rate example would demonstrate divergence.
+- **Actual:** Its finite loss grew until the budget ended, so the optimizer correctly
+  returned `MAX_STEPS`. The prediction used "diverges" in the looser mathematical
+  sense and contradicted the program's explicit status.
+- **Next time:** Write the prediction with the decision table open. Compare its nouns
+  and verbs against the observed enum and printed output before committing the file.
