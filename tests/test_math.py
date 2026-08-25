@@ -178,6 +178,50 @@ class OptimizationTests(unittest.TestCase):
         self.assertTrue(math.isnan(final.gradient))
         self.assertTrue(math.isfinite(result.trace[-2].loss))
 
+    def test_boolean_controls_are_not_read_as_one(self) -> None:
+        import numpy as _np
+
+        for epsilon in (True, _np.True_):
+            with self.subTest(epsilon=epsilon), self.assertRaisesRegex(
+                TypeError, "not a Boolean"
+            ):
+                finite_difference(lambda value: value**2, 1.0, epsilon=epsilon)
+        for control in ("learning_rate", "tolerance", "initial"):
+            arguments = {
+                "learning_rate": 0.1,
+                "max_steps": 2,
+                "tolerance": 0.0,
+            }
+            initial = 0.0
+            if control == "initial":
+                initial = True
+            else:
+                arguments[control] = True
+            with self.subTest(control=control), self.assertRaisesRegex(
+                TypeError, "not a Boolean"
+            ):
+                gradient_descent(initial, self.objective, **arguments)
+
+    def test_numpy_scalar_controls_still_work(self) -> None:
+        import numpy as _np
+
+        result = gradient_descent(
+            _np.float32(0.0),
+            self.objective,
+            learning_rate=_np.float32(0.2),
+            max_steps=100,
+            tolerance=_np.float64(1e-6),
+        )
+
+        self.assertIs(result.status, OptimizationStatus.CONVERGED)
+        self.assertAlmostEqual(
+            finite_difference(
+                lambda value: value**2, 1.0, epsilon=_np.float64(1e-6)
+            ),
+            2.0,
+            places=7,
+        )
+
     def test_optimization_controls_and_epsilon_boundary(self) -> None:
         for learning_rate, steps, tolerance in ((0.0, 1, 0.0), (0.1, 0, 0.0), (0.1, 1, -1.0)):
             with self.subTest(

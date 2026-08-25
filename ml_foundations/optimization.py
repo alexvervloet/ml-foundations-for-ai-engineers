@@ -14,8 +14,31 @@ from dataclasses import dataclass
 from enum import Enum
 import math
 
+import numpy as np
+
 
 LossAndGradient = Callable[[float], tuple[float, float]]
+
+
+def _real(name: str, value: object) -> float:
+    """Return one finite control value, rejecting Booleans before any conversion.
+
+    ``float(True)`` is 1.0, so an unguarded control reads a Boolean as a plausible
+    number rather than refusing it. ``max_steps`` has always rejected Booleans and the
+    floating controls now agree with it. ``numpy.bool_`` is not a Python ``bool``, so
+    it is named explicitly. Anything else that converts cleanly to a finite float is
+    still accepted, so NumPy and other real scalar types keep working.
+    """
+
+    if isinstance(value, (bool, np.bool_)):
+        raise TypeError(f"{name} must be a real number, not a Boolean")
+    try:
+        number = float(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError) as error:
+        raise TypeError(f"{name} must be a real number") from error
+    if not math.isfinite(number):
+        raise ValueError(f"{name} must be finite")
+    return number
 
 
 class OptimizationStatus(str, Enum):
@@ -55,9 +78,7 @@ def finite_difference(
     production tensor code.
     """
 
-    if not isinstance(epsilon, (int, float)) or not math.isfinite(epsilon):
-        raise ValueError("epsilon must be finite")
-    epsilon_value = float(epsilon)
+    epsilon_value = _real("epsilon", epsilon)
     if epsilon_value < 1e-8:
         raise ValueError("epsilon must be at least 1e-8 for this float64 check")
     plus = float(loss(parameter + epsilon_value))
@@ -90,11 +111,13 @@ def gradient_descent(
 
     if not isinstance(max_steps, int) or isinstance(max_steps, bool) or max_steps < 1:
         raise ValueError("max_steps must be a positive integer")
-    if not math.isfinite(learning_rate) or learning_rate <= 0.0:
+    rate = _real("learning_rate", learning_rate)
+    if rate <= 0.0:
         raise ValueError("learning_rate must be finite and greater than zero")
-    if not math.isfinite(tolerance) or tolerance < 0.0:
+    stop_below = _real("tolerance", tolerance)
+    if stop_below < 0.0:
         raise ValueError("tolerance must be finite and nonnegative")
-    parameter = float(initial)
+    parameter = _real("initial", initial)
     trace: list[OptimizationPoint] = []
     for step in range(max_steps + 1):
         loss, gradient = loss_and_gradient(parameter)
@@ -105,11 +128,11 @@ def gradient_descent(
             for value in (point.parameter, point.loss, point.gradient)
         ):
             return OptimizationResult(OptimizationStatus.DIVERGED, tuple(trace))
-        if abs(point.gradient) <= tolerance:
+        if abs(point.gradient) <= stop_below:
             return OptimizationResult(OptimizationStatus.CONVERGED, tuple(trace))
         if step == max_steps:
             return OptimizationResult(OptimizationStatus.MAX_STEPS, tuple(trace))
-        parameter -= learning_rate * point.gradient
+        parameter -= rate * point.gradient
         if not math.isfinite(parameter):
             trace.append(
                 OptimizationPoint(step + 1, parameter, math.nan, math.nan)
