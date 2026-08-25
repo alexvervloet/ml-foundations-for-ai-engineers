@@ -34,3 +34,12 @@
   sense and contradicted the program's explicit status.
 - **Next time:** Write the prediction with the decision table open. Compare its nouns
   and verbs against the observed enum and printed output before committing the file.
+
+## Resolve the Python floor from the complete dependency set
+
+- **Expected:** Python 3.11 would match the neighboring courses while current NumPy
+  and PyTorch pins supplied the tensor runtime.
+- **Actual:** NumPy 2.5 dropped Python 3.11. The package metadata promised a runtime
+  that its own dependency could not install on.
+- **Next time:** Check every pinned package's Python classifiers before choosing the
+  course floor. Make the CI minimum cell match the intersection, not a house default.
