@@ -79,6 +79,10 @@ class CalibrationTests(unittest.TestCase):
             expected_calibration_error(
                 [[1.0, 0.0], [0.0, 1.0]], [0, 1], bins=3
             )
+        with self.assertRaisesRegex(TypeError, "not a Boolean"):
+            expected_calibration_error(
+                [[1.0, 0.0], [0.0, 1.0]], [0, 1], bins=2, temperature=True
+            )
         self.assertGreaterEqual(
             expected_calibration_error(
                 [[1.0, 0.0], [0.0, 1.0]], [0, 1], bins=2

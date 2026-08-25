@@ -75,6 +75,8 @@ def expected_calibration_error(
         raise TypeError("bins must be an integer")
     if bins < 1 or bins > matrix.shape[0]:
         raise ValueError("bins must be between one and the number of rows")
+    if isinstance(temperature, bool):
+        raise TypeError("temperature must be a real number, not a Boolean")
     if not isinstance(temperature, (int, float)) or not np.isfinite(temperature):
         raise ValueError("temperature must be finite and positive")
     temperature_value = float(temperature)
