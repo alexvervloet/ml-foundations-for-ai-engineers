@@ -301,6 +301,7 @@ hands_on/          Deterministic tiny-transformer experiment
 tests/             Numeric, boundary, counterfactual, and teaching-contract tests
 TEXTBOOK.md        Explanations, derivations, and source notes
 EXERCISES.md       Changes to make and claims to defend
+LESSONS.md         What went wrong while building this course
 check_setup.py     Offline installation and determinism check
 ```
 
