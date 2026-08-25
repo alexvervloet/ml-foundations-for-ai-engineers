@@ -26,6 +26,8 @@ class MemoryTests(unittest.TestCase):
         second = estimate_inference_memory(100, 80, 10)
         first_components = {item.name: item.bytes for item in first.components}
         second_components = {item.name: item.bytes for item in second.components}
+        self.assertEqual(first_components["kv_cache"], 80)
+        self.assertEqual(second_components["kv_cache"], 160)
         self.assertEqual(
             second_components["kv_cache"], 2 * first_components["kv_cache"]
         )
