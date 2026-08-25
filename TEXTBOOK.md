@@ -299,8 +299,10 @@ cannot be separated after dequantization.
 
 More integer levels usually reduce reconstruction error for the same range. Outliers can
 make one global scale waste levels near zero, which motivates per-channel scales and other
-schemes. The quantization white paper by Gholami and coauthors provides a broader taxonomy:
-[A White Paper on Neural Network Quantization](https://arxiv.org/abs/2106.08295).
+schemes. The quantization white paper by Nagel and coauthors provides a broader taxonomy:
+[A White Paper on Neural Network Quantization](https://arxiv.org/abs/2106.08295). Gholami
+and coauthors survey the wider method space in
+[A Survey of Quantization Methods for Efficient Neural Network Inference](https://arxiv.org/abs/2103.13630).
 
 Keep four claims apart:
 
@@ -409,7 +411,8 @@ If the answer to the last question is no, inspect the check for circular evidenc
 
 - Vaswani et al., [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 - Guo et al., [On Calibration of Modern Neural Networks](https://arxiv.org/abs/1706.04599)
-- Gholami et al., [A White Paper on Neural Network Quantization](https://arxiv.org/abs/2106.08295)
+- Nagel et al., [A White Paper on Neural Network Quantization](https://arxiv.org/abs/2106.08295)
+- Gholami et al., [A Survey of Quantization Methods for Efficient Neural Network Inference](https://arxiv.org/abs/2103.13630)
 - PyTorch, [`CrossEntropyLoss`](https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html)
 - PyTorch, [`MultiheadAttention`](https://docs.pytorch.org/docs/stable/generated/torch.nn.MultiheadAttention.html)
 - PyTorch, [transformer building blocks](https://docs.pytorch.org/tutorials/intermediate/transformer_building_blocks.html)
