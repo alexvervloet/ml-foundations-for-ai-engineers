@@ -17,7 +17,12 @@ from numpy.typing import ArrayLike, NDArray
 
 @dataclass(frozen=True)
 class QuantizedTensor:
-    """Logical signed integers, scale, shape, and packed-payload accounting."""
+    """Logical signed integers, scale, shape, and packed-payload accounting.
+
+    ``source_bytes`` measures the array the caller passed in, at the caller's own
+    dtype. It is not measured after any internal conversion, because a float32
+    tensor stored as float32 must not be reported as if it occupied float64 bytes.
+    """
 
     values: NDArray[np.int8]
     scale: float
@@ -40,9 +45,14 @@ def quantize_symmetric(values: ArrayLike, *, bits: int) -> QuantizedTensor:
     container. An all-zero tensor uses scale one and reconstructs exactly. Packed
     bytes include only the logical payload and one float64 scale, not a real file or
     runtime layout.
+
+    Byte accounting reads the caller's array before the float64 working copy is made.
+    Reporting the converted copy would inflate every float32 or float16 source by two
+    or four times and turn an honest payload comparison into a flattering one.
     """
 
-    source = np.asarray(values, dtype=np.float64)
+    original = np.asarray(values)
+    source = original.astype(np.float64, copy=False)
     if source.size == 0:
         raise ValueError("quantization requires at least one value")
     if not np.all(np.isfinite(source)):
@@ -62,7 +72,7 @@ def quantize_symmetric(values: ArrayLike, *, bits: int) -> QuantizedTensor:
         scale,
         bits,
         source.shape,
-        source.nbytes,
+        original.nbytes,
         payload_bytes,
     )
 

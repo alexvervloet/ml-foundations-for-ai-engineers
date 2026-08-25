@@ -78,6 +78,16 @@ class QuantizationTests(unittest.TestCase):
         self.assertEqual(quantized.source_bytes, 128)
         self.assertEqual(quantized.packed_payload_bytes, 16)
 
+    def test_source_bytes_follow_the_caller_dtype(self) -> None:
+        values = np.linspace(-1.0, 1.0, 16)
+        as_float64 = quantize_symmetric(values, bits=8)
+        as_float32 = quantize_symmetric(values.astype(np.float32), bits=8)
+        self.assertEqual(as_float64.source_bytes, 128)
+        self.assertEqual(as_float32.source_bytes, 64)
+        self.assertEqual(
+            as_float32.packed_payload_bytes, as_float64.packed_payload_bytes
+        )
+
     def test_zero_tensor_has_exact_reconstruction(self) -> None:
         source = np.zeros((2, 3))
         quantized = quantize_symmetric(source, bits=8)
