@@ -279,6 +279,19 @@ test          judge the fitted model and calibration process
 Evaluating ECE on the same rows used to choose temperature reuses evidence. It reports fit,
 not held-out behavior.
 
+### A grid search only sees its own endpoints
+
+Selecting temperature from a declared grid is honest only if the winner sits inside the
+grid. If the smallest or largest candidate wins, loss was still falling when the search
+ran out of candidates, and the reported value says more about the grid than the data.
+
+A calibration split the model classifies perfectly guarantees this. With every row
+correct and confident, cross-entropy falls monotonically as temperature approaches zero,
+so the smallest candidate always wins and any ECE improvement can be driven arbitrarily
+close to zero by extending the grid downward. There is no temperature to find. The
+correct response is to say the fit is unresolved, not to report the grid floor as a
+result. `fit_temperature` returns `on_grid_boundary` for exactly this check.
+
 Expected calibration error groups predictions into confidence bins, compares mean
 confidence with empirical accuracy in each bin, and weights the absolute gaps. Its value
 depends on bin boundaries. Small datasets leave many bins sparse. Always state the binning
@@ -355,6 +368,18 @@ This design avoids an earlier bad corpus idea. If a row alternates arbitrary tok
 the first target is unknowable from the first input token. That places a hard ceiling under
 accuracy and a floor under loss. A requirement above that ceiling would be fake rigor.
 
+### The calibration step does not work here, and says so
+
+The trained model gets every calibration row right. By the argument above, that makes
+the temperature fit unresolved: the grid floor of 0.5 wins, and widening the grid
+downward drives held-out ECE to zero without learning anything. The report records
+`temperature_on_grid_boundary` and prints `grid floor, unresolved` beside the number.
+
+Leaving this in is deliberate. A tiny deterministic task that the model masters is
+exactly the situation where calibration has nothing to measure, and that is worth seeing
+once. Removing the step would hide the mechanism; presenting 0.5 as a fitted temperature
+would be the kind of quiet overclaim the rest of this chapter argues against.
+
 The experiment stops after 20 AdamW steps. More steps drove training loss closer to numeric
 zero but increased quantized-logit drift without changing held-out accuracy. Lower training
 loss was not free.
@@ -401,6 +426,7 @@ Before accepting a model mechanic or an experiment result, ask:
 5. Does a causal counterfactual prove future information cannot leak backward?
 6. Are sampling policy and random state explicit inputs?
 7. Are model fitting, calibration fitting, and final judgment on separate evidence?
+   Did the fitted value land inside its search grid or on an endpoint?
 8. Does quantization report reconstruction or task drift apart from payload bytes?
 9. Does a memory figure name every retained component and its scope?
 10. Can changing an independent requirement flip the final verdict?
