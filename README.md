@@ -261,9 +261,13 @@ train loss:       2.6799 -> 0.0009
 test accuracy:    100.0%
 test ECE:         0.0564 -> 0.0109 at T=0.50
 int8 logit drift: 0.023969 mean absolute
-weight payload:   45504 -> 5824 bytes
+weight payload:   22752 -> 5824 bytes
 verdict:          ready_for_lab_use
 ```
+
+The payload line compares the model's real fp32 parameter bytes with the logical int8
+payload plus one float64 scale per tensor. It is an accounting estimate on this tiny
+model, not a packed file and not a speed result.
 
 The model receives next-token labels during training. It never receives the maximum
 loss, minimum accuracy, maximum ECE, maximum drift, or split-lineage requirements that
