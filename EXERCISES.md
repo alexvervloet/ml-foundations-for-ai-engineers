@@ -133,6 +133,10 @@ python examples/09_calibration.py
    calibrator, not held-out evidence.
 3. Change from two to four ECE bins. Record the changed metric and its unchanged inputs.
 4. Construct an underconfident calibration set that chooses a temperature below one.
+5. Drop `8.0` from the grid so `4.0` becomes the largest candidate. Watch
+   `on_grid_boundary` flip and explain what the fitted number now fails to establish.
+6. Build a calibration set the model classifies perfectly. Extend the grid downward
+   until held-out ECE reaches zero, then argue why that number is worthless.
 
 ## 10. Quantization
 
@@ -184,6 +188,9 @@ python hands_on/train_tiny_transformer.py
    targets that cannot be inferred from the available prefix before running anything.
 6. Add quantized test accuracy as a new observation and a separately declared minimum.
    Write the failing counterfactual test before changing the verdict function.
+7. The report marks its temperature fit unresolved. Change the calibration split to rows
+   the model gets wrong, then state whether the fit becomes interior and what that costs
+   the held-out accuracy requirement.
 
 ## Review exercise
 
