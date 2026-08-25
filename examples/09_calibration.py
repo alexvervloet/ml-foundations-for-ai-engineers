@@ -1,7 +1,8 @@
 """Fit temperature on calibration rows and measure it on separate test rows.
 
-Prediction: this overconfident calibration set chooses cooling. Whether cooling helps
-is decided only on the held-out rows. Run with `python examples/09_calibration.py`.
+Prediction: this overconfident calibration set chooses cooling from inside the grid,
+so the fit is not an artifact of where the grid stopped. Whether cooling helps is
+decided only on the held-out rows. Run with `python examples/09_calibration.py`.
 """
 
 import numpy as np
@@ -22,7 +23,7 @@ def main() -> None:
     fitted = fit_temperature(
         calibration_logits,
         calibration_labels,
-        temperatures=(0.5, 1.0, 2.0, 4.0),
+        temperatures=(0.5, 1.0, 2.0, 4.0, 8.0),
     )
     before = expected_calibration_error(test_logits, test_labels, bins=2)
     after = expected_calibration_error(
@@ -31,6 +32,7 @@ def main() -> None:
 
     print("Held-out temperature scaling")
     print(f"  fitted temperature: {fitted.temperature:.1f}")
+    print(f"  fit pinned to a grid endpoint: {fitted.on_grid_boundary}")
     print(f"  test ECE before:    {before:.4f}")
     print(f"  test ECE after:     {after:.4f}")
     print(f"  held-out ECE improved: {after < before}")
