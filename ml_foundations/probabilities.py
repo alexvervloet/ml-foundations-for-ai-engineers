@@ -71,7 +71,7 @@ def sample_from_logits(
     """
 
     row = _sampling_row(logits)
-    if isinstance(temperature, bool):
+    if isinstance(temperature, (bool, np.bool_)):
         raise TypeError("temperature must be a real number, not a Boolean")
     if not isinstance(temperature, (int, float)) or not np.isfinite(temperature):
         raise ValueError("temperature must be a finite positive number")

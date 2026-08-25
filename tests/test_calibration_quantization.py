@@ -52,6 +52,15 @@ class CalibrationTests(unittest.TestCase):
             dict(wider.candidates)[0.05], dict(narrow.candidates)[0.5]
         )
 
+    def test_a_numpy_float_grid_is_still_accepted(self) -> None:
+        fitted = fit_temperature(
+            [[1.0, 0.0], [0.0, 1.0]],
+            [0, 1],
+            temperatures=tuple(np.linspace(0.5, 2.0, 4)),
+        )
+
+        self.assertAlmostEqual(fitted.temperature, 0.5)
+
     def test_temperature_scaling_preserves_argmax(self) -> None:
         logits = np.array([[3.0, 1.0, -2.0], [0.0, 2.0, 1.0]])
         cold = np.argmax(stable_softmax(logits / 0.5, axis=1), axis=1)
@@ -79,10 +88,21 @@ class CalibrationTests(unittest.TestCase):
             expected_calibration_error(
                 [[1.0, 0.0], [0.0, 1.0]], [0, 1], bins=3
             )
-        with self.assertRaisesRegex(TypeError, "not a Boolean"):
-            expected_calibration_error(
-                [[1.0, 0.0], [0.0, 1.0]], [0, 1], bins=2, temperature=True
-            )
+        for temperature in (True, np.True_):
+            with self.subTest(temperature=temperature), self.assertRaisesRegex(
+                TypeError, "not a Boolean"
+            ):
+                expected_calibration_error(
+                    [[1.0, 0.0], [0.0, 1.0]],
+                    [0, 1],
+                    bins=2,
+                    temperature=temperature,
+                )
+        for grid in ((True, 2.0), (0.5, np.True_)):
+            with self.subTest(grid=grid), self.assertRaisesRegex(
+                TypeError, "not Booleans"
+            ):
+                fit_temperature([[1.0, 0.0], [0.0, 1.0]], [0, 1], temperatures=grid)
         self.assertGreaterEqual(
             expected_calibration_error(
                 [[1.0, 0.0], [0.0, 1.0]], [0, 1], bins=2

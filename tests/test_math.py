@@ -103,8 +103,11 @@ class ProbabilityAndLossTests(unittest.TestCase):
         for top_k in (0, 3):
             with self.subTest(top_k=top_k), self.assertRaises(ValueError):
                 sample_from_logits([1.0, 0.0], temperature=1.0, top_k=top_k, rng=rng)
-        with self.assertRaisesRegex(TypeError, "not a Boolean"):
-            sample_from_logits([1.0, 0.0], temperature=True, rng=rng)
+        for temperature in (True, np.True_):
+            with self.subTest(temperature=temperature), self.assertRaisesRegex(
+                TypeError, "not a Boolean"
+            ):
+                sample_from_logits([1.0, 0.0], temperature=temperature, rng=rng)
 
 
 class OptimizationTests(unittest.TestCase):

@@ -75,7 +75,7 @@ def expected_calibration_error(
         raise TypeError("bins must be an integer")
     if bins < 1 or bins > matrix.shape[0]:
         raise ValueError("bins must be between one and the number of rows")
-    if isinstance(temperature, bool):
+    if isinstance(temperature, (bool, np.bool_)):
         raise TypeError("temperature must be a real number, not a Boolean")
     if not isinstance(temperature, (int, float)) or not np.isfinite(temperature):
         raise ValueError("temperature must be finite and positive")
@@ -108,7 +108,8 @@ def fit_temperature(
     """Choose the declared temperature with the lowest mean cross-entropy.
 
     The candidate grid must contain at least two unique, strictly increasing positive
-    values. Exact loss ties choose the smaller temperature. The caller owns the split
+    values. Booleans are rejected before conversion, because ``float(True)`` would
+    otherwise slip a silent 1.0 into the grid. Exact loss ties choose the smaller temperature. The caller owns the split
     boundary and must not evaluate calibration on these same fitted rows.
 
     The result flags a winner that sits on either grid endpoint. That happens whenever
@@ -120,6 +121,8 @@ def fit_temperature(
     matrix, targets = _labelled_logits(logits, labels)
     if len(temperatures) < 2:
         raise ValueError("temperature grid must contain at least two values")
+    if any(isinstance(value, (bool, np.bool_)) for value in temperatures):
+        raise TypeError("temperature candidates must be real numbers, not Booleans")
     normalized = tuple(float(value) for value in temperatures)
     if any(not np.isfinite(value) or value <= 0.0 for value in normalized):
         raise ValueError("temperature candidates must be finite and positive")
