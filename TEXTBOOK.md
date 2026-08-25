@@ -1,4 +1,4 @@
-# ML foundations for AI engineers: field notes
+# Chapter 24: The Numeric Contracts Beneath the Model
 
 This text explains the mechanics behind the runnable lessons. It assumes you build AI
 applications and need enough model knowledge to debug a bad result, review an ML claim,
