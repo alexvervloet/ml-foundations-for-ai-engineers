@@ -81,6 +81,11 @@ def gradient_descent(
     state before an update. A gradient whose magnitude equals tolerance counts as
     converged. Nonfinite loss, gradient, or updated parameter reports divergence.
     Exhausting the budget reports max_steps rather than pretending convergence.
+
+    When the update itself overflows, the final trace point carries the nonfinite
+    parameter with a loss and gradient of nan, because the objective was never called
+    there. Filling those fields with infinity would put a number in the trace that
+    nothing measured.
     """
 
     if not isinstance(max_steps, int) or isinstance(max_steps, bool) or max_steps < 1:
@@ -106,6 +111,8 @@ def gradient_descent(
             return OptimizationResult(OptimizationStatus.MAX_STEPS, tuple(trace))
         parameter -= learning_rate * point.gradient
         if not math.isfinite(parameter):
-            trace.append(OptimizationPoint(step + 1, parameter, math.inf, math.inf))
+            trace.append(
+                OptimizationPoint(step + 1, parameter, math.nan, math.nan)
+            )
             return OptimizationResult(OptimizationStatus.DIVERGED, tuple(trace))
     raise RuntimeError("gradient descent reached an impossible state")

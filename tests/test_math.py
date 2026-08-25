@@ -159,6 +159,22 @@ class OptimizationTests(unittest.TestCase):
         )
         self.assertIs(divergence.status, OptimizationStatus.DIVERGED)
 
+    def test_an_overflowing_update_is_not_a_measured_point(self) -> None:
+        result = gradient_descent(
+            0.0,
+            lambda value: (value * value, 1e308),
+            learning_rate=10.0,
+            max_steps=5,
+            tolerance=0.0,
+        )
+        final = result.trace[-1]
+
+        self.assertIs(result.status, OptimizationStatus.DIVERGED)
+        self.assertTrue(math.isinf(final.parameter))
+        self.assertTrue(math.isnan(final.loss))
+        self.assertTrue(math.isnan(final.gradient))
+        self.assertTrue(math.isfinite(result.trace[-2].loss))
+
     def test_optimization_controls_and_epsilon_boundary(self) -> None:
         for learning_rate, steps, tolerance in ((0.0, 1, 0.0), (0.1, 0, 0.0), (0.1, 1, -1.0)):
             with self.subTest(
