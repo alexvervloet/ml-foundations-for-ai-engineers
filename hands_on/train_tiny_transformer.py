@@ -5,11 +5,15 @@ Run from the repository root:
     python hands_on/train_tiny_transformer.py
 
 The corpus contains rotations of one cyclic token rule. Training, calibration, and
-test rows have distinct starting-token identities. The model receives next-token
-labels during training, which is legitimate supervision. It never receives the
-independent loss, accuracy, calibration, drift, or split-lineage requirements that
-decide the report. The experiment runs on CPU and writes deterministic
-training-report.json.
+test rows have distinct starting-token identities. The trained model classifies the
+calibration rows perfectly, so calibration loss keeps falling as temperature shrinks
+and the fit lands on the grid floor. The report records that rather than presenting an
+unresolved fit as a chosen temperature.
+
+The model receives next-token labels during training, which is legitimate supervision.
+It never receives the independent loss, accuracy, calibration, drift, or split-lineage
+requirements that decide the report. The experiment runs on CPU and writes a
+deterministic training-report.json.
 """
 
 from __future__ import annotations
@@ -70,6 +74,7 @@ class ExperimentObservations:
     fitted_temperature: float
     test_ece_before: float
     test_ece_after: float
+    temperature_on_grid_boundary: bool
     mean_logit_drift: float
     source_weight_bytes: int
     quantized_payload_bytes: int
@@ -291,6 +296,7 @@ def run_experiment(
         fitted_temperature=temperature_fit.temperature,
         test_ece_before=round(ece_before, 8),
         test_ece_after=round(ece_after, 8),
+        temperature_on_grid_boundary=temperature_fit.on_grid_boundary,
         mean_logit_drift=round(logit_drift, 8),
         source_weight_bytes=source_bytes,
         quantized_payload_bytes=payload_bytes,
@@ -321,9 +327,15 @@ def main() -> int:
     print("Tiny transformer experiment")
     print(f"  train loss:       {observed.initial_loss:.4f} -> {observed.final_loss:.4f}")
     print(f"  test accuracy:    {observed.test_accuracy:.1%}")
+    fit_note = (
+        "grid floor, unresolved"
+        if observed.temperature_on_grid_boundary
+        else "interior fit"
+    )
     print(
         f"  test ECE:         {observed.test_ece_before:.4f} -> "
-        f"{observed.test_ece_after:.4f} at T={observed.fitted_temperature:.2f}"
+        f"{observed.test_ece_after:.4f} at T={observed.fitted_temperature:.2f} "
+        f"({fit_note})"
     )
     print(f"  int8 logit drift: {observed.mean_logit_drift:.6f} mean absolute")
     print(

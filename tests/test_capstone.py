@@ -37,6 +37,18 @@ class CapstoneTests(unittest.TestCase):
             observed.quantized_payload_bytes, observed.source_weight_bytes
         )
 
+    def test_perfect_calibration_split_leaves_the_fit_unresolved(self) -> None:
+        """Lock in the honest reading of this experiment's calibration step.
+
+        The model classifies the calibration rows perfectly, so calibration loss
+        falls monotonically toward zero temperature and the grid floor always wins.
+        If a future change makes the split hard enough to choose a temperature, this
+        test fails and the documentation that calls the fit unresolved must change
+        with it.
+        """
+
+        self.assertTrue(self.report.observations.temperature_on_grid_boundary)
+
     def test_experiment_is_reproducible(self) -> None:
         self.assertEqual(run_experiment(), self.report)
 
