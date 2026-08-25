@@ -21,7 +21,7 @@ def main() -> None:
     after = cross_entropy_from_logits(improved, target)
     torch_loss = float(
         F.cross_entropy(
-            torch.tensor([improved], dtype=torch.float64),
+            torch.from_numpy(improved[None, :]),
             torch.tensor([target]),
         )
     )
