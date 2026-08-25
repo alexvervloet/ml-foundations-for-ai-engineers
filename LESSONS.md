@@ -52,3 +52,12 @@
   package and stopped before counting tests.
 - **Next time:** Either add `tests/__init__.py` deliberately or omit `top_level_dir`.
   Copy the exact verified discovery call into setup and CI instead of approximating it.
+
+## A scaling relation needs a nonzero anchor
+
+- **Expected:** The test that doubled KV elements would kill an implementation that
+  dropped the KV cache from memory accounting.
+- **Actual:** Both zero-byte results still satisfied `long == 2 * short`, so the
+  mutation survived.
+- **Next time:** Pair metamorphic scaling checks with one independently calculated
+  baseline. The KV test now requires 40 fp16 elements to consume exactly 80 bytes.
