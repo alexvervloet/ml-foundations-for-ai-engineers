@@ -1,7 +1,8 @@
 """See learning rate and step budget as parts of an optimizer contract.
 
-Prediction: the same quadratic converges with a moderate learning rate and diverges
-with a large one. Run with `python examples/05_gradient_descent.py`.
+Prediction: the same quadratic converges with a moderate learning rate, while a large
+one moves away from the minimum until its step budget ends. Run with
+`python examples/05_gradient_descent.py`.
 """
 
 from ml_foundations import gradient_descent
