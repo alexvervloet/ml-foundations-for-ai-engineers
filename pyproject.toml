@@ -7,12 +7,12 @@ name = "ml-foundations-for-ai-engineers"
 version = "0.1.0"
 description = "Offline tensor and transformer foundations for AI engineers"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = "MIT"
 authors = [{ name = "Alex Vervloet" }]
 dependencies = [
-  "numpy==2.5.0",
-  "torch==2.12.1",
+  "numpy==2.5.2",
+  "torch==2.13.0",
 ]
 
 [tool.setuptools.packages.find]
