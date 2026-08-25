@@ -102,3 +102,17 @@
 - **Next time:** Copy the heading straight from the parent TEXTBOOK.md row when
   creating a dive, before writing any body text.
 
+## A conversion can swallow the value a type check was meant to catch
+
+- **Expected:** Adding an explicit Boolean guard to each temperature parameter closed
+  the gap where `True` was read as a temperature of 1.0.
+- **Actual:** It closed two of the three entry points. `fit_temperature` normalizes its
+  candidate grid with `float(value)` before validating anything, so `(True, 2.0)`
+  became `(1.0, 2.0)` and passed every later check. A guard placed after a conversion
+  cannot see what the conversion consumed. The same review also found that
+  `isinstance(value, bool)` misses `numpy.bool_`, which matters in a course whose
+  arrays are all NumPy.
+- **Next time:** Validate types at the boundary, before any normalization step, and
+  when a fix applies to a family of parameters, grep for every place that family is
+  accepted rather than fixing the ones that came to mind.
+
