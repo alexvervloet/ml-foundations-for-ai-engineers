@@ -43,3 +43,12 @@
   that its own dependency could not install on.
 - **Next time:** Check every pinned package's Python classifiers before choosing the
   course floor. Make the CI minimum cell match the intersection, not a house default.
+
+## Match unittest discovery to the test directory shape
+
+- **Expected:** Supplying the repository as `top_level_dir` would make setup discovery
+  match the command-line test run.
+- **Actual:** `unittest` then required the plain `tests` directory to be an importable
+  package and stopped before counting tests.
+- **Next time:** Either add `tests/__init__.py` deliberately or omit `top_level_dir`.
+  Copy the exact verified discovery call into setup and CI instead of approximating it.
