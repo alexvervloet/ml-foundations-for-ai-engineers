@@ -109,8 +109,9 @@ def fit_temperature(
 
     The candidate grid must contain at least two unique, strictly increasing positive
     values. Booleans are rejected before conversion, because ``float(True)`` would
-    otherwise slip a silent 1.0 into the grid. Exact loss ties choose the smaller temperature. The caller owns the split
-    boundary and must not evaluate calibration on these same fitted rows.
+    otherwise slip a silent 1.0 into the grid. Exact loss ties choose the smaller
+    temperature. The caller owns the split boundary and must not evaluate calibration on
+    these same fitted rows.
 
     The result flags a winner that sits on either grid endpoint. That happens whenever
     loss is still falling at the edge, which a calibration split the model classifies
