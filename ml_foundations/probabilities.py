@@ -64,10 +64,11 @@ def sample_from_logits(
 ) -> int:
     """Draw one token from finite 1-D logits under temperature and top-k.
 
-    Validation order is logits, temperature, then top-k. Temperature must be a
-    positive real number; Booleans are rejected rather than read as zero or one. Greedy decoding has its own function so zero cannot quietly change
-    policy. Top-k ties use lower token ids first. The injected generator makes a run
-    reproducible, but a single seeded draw does not characterize the distribution.
+    Validation order is logits, temperature, then top-k. Temperature must be a positive
+    real number; Booleans are rejected rather than read as zero or one. Greedy decoding
+    has its own function so zero cannot change policy. Top-k ties use lower token ids
+    first. The injected generator makes a run reproducible, but a single seeded draw
+    does not characterize the distribution.
     """
 
     row = _sampling_row(logits)
