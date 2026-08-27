@@ -326,4 +326,4 @@ for lineage, corpus synchronization, and retrieval data contracts.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT
