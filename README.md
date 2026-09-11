@@ -5,7 +5,7 @@ evaluating, and sizing LLM systems. The examples use NumPy for visible math and
 PyTorch for autograd and transformer code. Everything runs on CPU with synthetic
 data. No API key, model download, GPU, or cloud account is required.
 
-This is not a compressed ML degree. It leaves out broad surveys of classical models,
+This isn't a compressed ML degree. It leaves out broad surveys of classical models,
 proof-heavy optimization, distributed training, and research-scale pretraining. The
 goal is narrower: read tensor shapes, understand the numbers around a model call,
 spot invalid conclusions, and have an informed conversation with an ML specialist.
@@ -99,7 +99,7 @@ overflow, so the implementation subtracts the row maximum first. Adding or subtr
 one shared constant leaves the probabilities unchanged.
 
 This invariance is useful and limited. It proves that softmax depends on score gaps. It
-does not prove that a probability is calibrated against real outcomes.
+doesn't prove that a probability is calibrated against real outcomes.
 
 ## 4. Cross-entropy from logits
 
@@ -112,7 +112,7 @@ The example raises only the target logit, observes target probability rise, and 
 the NumPy loss against PyTorch. Production code should pass logits directly to
 `torch.nn.functional.cross_entropy`; a separate softmax loses numeric stability.
 
-The target is supervision. It is legitimate input to the training loss. It must not
+The target is supervision. It's legitimate input to the training loss. It must not
 also supply an evaluation threshold or tell a later verdict what answer to expect.
 
 ## 5. Gradients and gradient checks
@@ -122,12 +122,12 @@ python examples/04_gradients.py
 ```
 
 The same scalar derivative is calculated analytically, with a centered finite
-difference, and with PyTorch autograd. Agreement checks one local derivative. It does
-not prove the objective is suitable, the data is representative, or the optimizer will
+difference, and with PyTorch autograd. Agreement checks one local derivative. It doesn't
+prove the objective is suitable, the data is representative, or the optimizer will
 converge.
 
 Finite differences have their own numeric policy. This course rejects epsilon below
-`1e-8` for its float64 teaching calculation because cancellation can dominate. That is
+`1e-8` for its float64 teaching calculation because cancellation can dominate. That's
 not a universal epsilon for every dtype or scale.
 
 ## 6. Gradient descent and terminal states
@@ -192,7 +192,7 @@ Sampling is policy applied to one logit row. The course makes the branches expli
 | `top_k=k` | Exclude every token outside the highest `k` logits |
 | Injected generator | Make the random sequence reproducible from its state |
 
-A seed is not global magic. Reproducibility depends on the exact generator state,
+A seed isn't global magic. Reproducibility depends on the exact generator state,
 algorithm, inputs, and software path.
 
 ## 10. Held-out calibration
@@ -210,9 +210,9 @@ on different test rows. The fitted temperature is 4.0 and held-out ECE changes f
 0.2320 to 0.0189. That result belongs to this small synthetic set and this binning rule.
 ECE can hide class and cohort errors, especially with small samples.
 
-A grid search cannot see past its own endpoints. If the winning temperature is the
+A grid search can't see past its own endpoints. If the winning temperature is the
 smallest or largest candidate, calibration loss was still falling when the grid ran out
-and the data did not really choose that value. `fit_temperature` reports this as
+and the data didn't really choose that value. `fit_temperature` reports this as
 `on_grid_boundary`, and the example prints it. A calibration split the model classifies
 perfectly guarantees a boundary fit, because loss then falls all the way toward zero
 temperature.
@@ -229,7 +229,7 @@ payload bytes and has more reconstruction error.
 
 The implementation stores logical values in an int8 NumPy array. Its sub-byte figure is
 an accounting estimate, not an actual packed file. It benchmarks no kernel. Smaller
-payload does not establish lower latency or higher throughput.
+payload doesn't establish lower latency or higher throughput.
 
 ## 12. Training and inference memory
 
@@ -237,12 +237,12 @@ payload does not establish lower latency or higher throughput.
 python examples/11_training_vs_inference_memory.py
 ```
 
-A weights-only number is not a training-memory number. The default training estimate
+A weights-only number isn't a training-memory number. The default training estimate
 names weights, gradients, fp32 master weights, two fp32 Adam moments, and saved
 activations. The inference estimate names weights, current activations, and KV cache.
 
 The formulas omit allocator overhead, temporary workspaces, fragmentation, sharding,
-recomputation, and framework reuse. They are component checks. Measure peak allocated and
+recomputation, and framework reuse. They're component checks. Measure peak allocated and
 reserved memory on the target runtime before placing a workload.
 
 ## 13. Capstone: train and inspect a tiny transformer
@@ -277,10 +277,10 @@ every calibration row right, so no temperature grid can choose a value: loss kee
 falling toward zero temperature and the smallest candidate always wins. Widening the
 grid downward drives held-out ECE to 0.0 and means nothing. The report prints
 `grid floor, unresolved` and stores `temperature_on_grid_boundary` so the number is
-never read as a fitted result. The mechanism is worth learning here; the fit is not.
+never read as a fitted result. The mechanism is worth learning here; the fit isn't.
 
 The payload line compares the model's real fp32 parameter bytes with the logical int8
-payload plus one float64 scale per tensor. It is an accounting estimate on this tiny
+payload plus one float64 scale per tensor. It's an accounting estimate on this tiny
 model, not a packed file and not a speed result.
 
 The model receives next-token labels during training. It never receives the maximum
@@ -289,7 +289,7 @@ judge the report. Tests change each bound independently and verify the verdict c
 `ready_for_lab_use` means this deterministic experiment met that lab contract. It says
 nothing about production readiness or behavior outside the cyclic dataset.
 
-The script writes `training-report.json`. Git ignores the report because it is generated
+The script writes `training-report.json`. Git ignores the report because it's generated
 evidence, not source.
 
 ## 14. Repository map
