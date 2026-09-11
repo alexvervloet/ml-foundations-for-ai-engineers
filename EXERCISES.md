@@ -1,7 +1,7 @@
 # Exercises
 
 Write a prediction before each run. After the change, explain the output using shapes,
-units, split roles, policy, or retained state. Do not copy the observed answer into the
+units, split roles, policy, or retained state. Don't copy the observed answer into the
 check that judges it.
 
 ## 1. Vectors and shapes
@@ -31,7 +31,7 @@ python examples/02_softmax.py
 2. Multiply every logit by two. Predict which probability moves farthest.
 3. Implement direct exponentiation in the example only. Observe the warning or nonfinite
    result on large logits, then remove the broken version.
-4. Explain why a 0.94 softmax value does not establish 94 percent correctness.
+4. Explain why a 0.94 softmax value doesn't establish 94 percent correctness.
 
 ## 3. Cross-entropy
 
@@ -68,7 +68,7 @@ Run:
 python examples/05_gradient_descent.py
 ```
 
-1. Set a moderate rate with a budget of one step. Confirm the terminal status is not
+1. Set a moderate rate with a budget of one step. Confirm the terminal status isn't
    convergence.
 2. Find a learning rate that reaches a nonfinite value under a much larger initial
    parameter. Keep `max_steps` finite.
@@ -86,7 +86,7 @@ python examples/06_attention.py
 
 1. Remove the square-root scale temporarily and compare the last-row weights.
 2. Change the final key instead of the final value. Confirm earlier causal outputs still
-   do not move.
+   don't move.
 3. Pass a mask with one fully forbidden row and explain why returning zeros would hide an
    invalid attention relationship.
 4. Build a padding mask for two sequences of unequal length. State how it differs from a
@@ -183,9 +183,9 @@ python hands_on/train_tiny_transformer.py
 3. Reuse the calibration split identifier as the test identifier. Confirm the report is
    invalid before quality checks run.
 4. Train for 40 steps while leaving requirements fixed. Measure loss, accuracy, ECE, and
-   int8 drift. Explain why the extra optimization is not automatically an improvement.
+   int8 drift. Explain why the extra optimization isn't automatically an improvement.
 5. Replace cyclic rotations with arbitrary alternating pairs. Calculate the share of
-   targets that cannot be inferred from the available prefix before running anything.
+   targets that can't be inferred from the available prefix before running anything.
 6. Add quantized test accuracy as a new observation and a separately declared minimum.
    Write the failing counterfactual test before changing the verdict function.
 7. The report marks its temperature fit unresolved. Change the calibration split to rows
@@ -203,5 +203,5 @@ observed evidence:
 validity boundary:
 ```
 
-Then change only the requirement. If the conclusion cannot change, the check may be
+Then change only the requirement. If the conclusion can't change, the check may be
 circular or the requirement may not be connected to the decision.
