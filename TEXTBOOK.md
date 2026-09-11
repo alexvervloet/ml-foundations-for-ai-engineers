@@ -2,7 +2,7 @@
 
 This text explains the mechanics behind the runnable lessons. It assumes you build AI
 applications and need enough model knowledge to debug a bad result, review an ML claim,
-or estimate a deployment. It does not try to turn one repository into a graduate
+or estimate a deployment. It doesn't try to turn one repository into a graduate
 curriculum.
 
 ## 1. Start with axes, not arrays
@@ -38,7 +38,7 @@ vector has no direction, so cosine similarity is undefined. Returning zero for t
 would turn an invalid input into a plausible similarity score.
 
 Embedding similarity inherits these limits. A high cosine says two vectors point in a
-similar direction under one embedding model. It does not prove factual equivalence,
+similar direction under one embedding model. It doesn't prove factual equivalence,
 relevance to a user, or stability across model revisions.
 
 ## 2. Logits and probabilities answer different questions
@@ -59,12 +59,12 @@ p_i = exp(z_i - m) / sum_j exp(z_j - m)
 The result is identical because the shared factor `exp(-m)` cancels. Every exponent is
 now at most zero.
 
-Softmax is invariant to a shared shift. It is not invariant to scale. Multiplying logits
+Softmax is invariant to a shared shift. It isn't invariant to scale. Multiplying logits
 by two sharpens the distribution. Dividing by a temperature greater than one flattens it.
 That distinction later powers temperature scaling and sampling.
 
-Do not read a softmax number as a measured chance of correctness without calibration
-evidence. It is normalized model preference for one input. Confidence is a behavioral
+Don't read a softmax number as a measured chance of correctness without calibration
+evidence. It's normalized model preference for one input. Confidence is a behavioral
 claim across many labelled outcomes.
 
 ## 3. Cross-entropy turns supervision into a loss
@@ -91,7 +91,7 @@ stability.
 ### What lower loss establishes
 
 Lower training loss establishes that the optimizer fit the training objective better.
-It does not establish:
+It doesn't establish:
 
 - generalization to held-out data;
 - calibrated confidence;
@@ -150,7 +150,7 @@ max_steps   budget ended first
 diverged    arithmetic became nonfinite
 ```
 
-A finite loss that grows for 12 steps is bad evidence, but it is not the same state as
+A finite loss that grows for 12 steps is bad evidence, but it isn't the same state as
 NaN. The remedies differ. Budget exhaustion may need more steps, a new rate, or a better
 stop rule. Nonfinite arithmetic may need lower precision controls, loss scaling, clipping,
 or investigation of invalid data.
@@ -184,11 +184,11 @@ At position `i`, a causal decoder may read keys from positions zero through `i`.
 not read later positions. A lower-triangular permission matrix expresses that rule.
 
 Mask before softmax. Zeroing forbidden weights after softmax without renormalizing changes
-row mass. Giving a forbidden score zero does not remove it because zero may exceed allowed
+row mass. Giving a forbidden score zero doesn't remove it because zero may exceed allowed
 negative scores. The usual additive implementation uses negative infinity before softmax.
 
-Shape checks are not enough to validate causality. Change a future value or future token
-and verify earlier outputs do not move. That counterfactual tests the property you care
+Shape checks aren't enough to validate causality. Change a future value or future token
+and verify earlier outputs don't move. That counterfactual tests the property you care
 about.
 
 ## 7. What a transformer block adds
@@ -202,7 +202,7 @@ h2 = h1 + feed_forward(layer_norm(h1))
 
 Residual additions require the update and residual stream to share shape. Multi-head
 attention splits model width into `heads * head_width`, computes attention per head, then
-merges heads back to model width. Construction must reject a model width that cannot divide
+merges heads back to model width. Construction must reject a model width that can't divide
 evenly.
 
 The feed-forward network acts independently at each sequence position. Attention mixes
@@ -265,7 +265,7 @@ coauthors measured this behavior and evaluated temperature scaling in
 [On Calibration of Modern Neural Networks](https://arxiv.org/abs/1706.04599).
 
 Temperature scaling selects one positive scalar on labelled calibration data. Dividing all
-class logits by the same temperature preserves their ordering, so accuracy does not change.
+class logits by the same temperature preserves their ordering, so accuracy doesn't change.
 Confidence does.
 
 The split roles are:
@@ -288,7 +288,7 @@ ran out of candidates, and the reported value says more about the grid than the 
 A calibration split the model classifies perfectly guarantees this. With every row
 correct and confident, cross-entropy falls monotonically as temperature approaches zero,
 so the smallest candidate always wins and any ECE improvement can be driven arbitrarily
-close to zero by extending the grid downward. There is no temperature to find. The
+close to zero by extending the grid downward. There's no temperature to find. The
 correct response is to say the fit is unresolved, not to report the grid floor as a
 result. `fit_temperature` returns `on_grid_boundary` for exactly this check.
 
@@ -308,7 +308,7 @@ w_hat = q * scale
 ```
 
 Clipping keeps `q` inside the declared range. Values that map to the same integer level
-cannot be separated after dequantization.
+can't be separated after dequantization.
 
 More integer levels usually reduce reconstruction error for the same range. Outliers can
 make one global scale waste levels near zero, which motivates per-channel scales and other
@@ -324,8 +324,8 @@ Keep four claims apart:
 3. task or logit drift after reconstruction;
 4. runtime latency and throughput on one kernel and device.
 
-The first two do not imply the last two. A NumPy int8 container holding logical int4 values
-does not consume int4 memory until code actually packs it.
+The first two don't imply the last two. A NumPy int8 container holding logical int4 values
+doesn't consume int4 memory until code actually packs it.
 
 ## 11. Memory follows retained state
 
@@ -339,7 +339,7 @@ first Adam moment         4 bytes
 second Adam moment        4 bytes
 ```
 
-That is 16 bytes per parameter before saved activations, temporary workspaces, allocator
+That's 16 bytes per parameter before saved activations, temporary workspaces, allocator
 behavior, or distributed copies. Optimizer choice and sharding can change the account.
 
 Autoregressive inference often retains lower-precision weights, current activations, and
@@ -368,7 +368,7 @@ This design avoids an earlier bad corpus idea. If a row alternates arbitrary tok
 the first target is unknowable from the first input token. That places a hard ceiling under
 accuracy and a floor under loss. A requirement above that ceiling would be fake rigor.
 
-### The calibration step does not work here, and says so
+### The calibration step doesn't work here, and says so
 
 The trained model gets every calibration row right. By the argument above, that makes
 the temperature fit unresolved: the grid floor of 0.5 wins, and widening the grid
@@ -376,13 +376,13 @@ downward drives held-out ECE to zero without learning anything. The report recor
 `temperature_on_grid_boundary` and prints `grid floor, unresolved` beside the number.
 
 Leaving this in is deliberate. A tiny deterministic task that the model masters is
-exactly the situation where calibration has nothing to measure, and that is worth seeing
+exactly the situation where calibration has nothing to measure, and that's worth seeing
 once. Removing the step would hide the mechanism; presenting 0.5 as a fitted temperature
 would be the kind of quiet overclaim the rest of this chapter argues against.
 
 The experiment stops after 20 AdamW steps. More steps drove training loss closer to numeric
 zero but increased quantized-logit drift without changing held-out accuracy. Lower training
-loss was not free.
+loss wasn't free.
 
 ### Independent requirements
 
@@ -402,9 +402,9 @@ Tests mutate each observation across its requirement and change policy while hol
 observations fixed. That matters. A check whose expected answer came from the same result it
 judges would keep agreeing with its own bug.
 
-### What the verdict does not say
+### What the verdict doesn't say
 
-`ready_for_lab_use` is intentionally narrow. It does not say:
+`ready_for_lab_use` is intentionally narrow. It doesn't say:
 
 - the model understands language;
 - the cyclic task represents any production distribution;
@@ -423,7 +423,7 @@ Before accepting a model mechanic or an experiment result, ask:
 2. Are logits passed to a stable combined loss?
 3. Does a gradient check use a sensible dtype and epsilon?
 4. Does training name convergence, budget exhaustion, and numeric failure separately?
-5. Does a causal counterfactual prove future information cannot leak backward?
+5. Does a causal counterfactual prove future information can't leak backward?
 6. Are sampling policy and random state explicit inputs?
 7. Are model fitting, calibration fitting, and final judgment on separate evidence?
    Did the fitted value land inside its search grid or on an endpoint?
