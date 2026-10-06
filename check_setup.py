@@ -31,7 +31,7 @@ MODULES = (
     "tiny_lm",
     "transformer",
 )
-EXPECTED_VERSIONS = {"numpy": "2.5.2", "torch": "2.13.0"}
+EXPECTED_VERSIONS = {"numpy": "2.5.3", "torch": "2.14.1"}
 
 
 def main() -> int:
