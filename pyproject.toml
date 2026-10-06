@@ -11,8 +11,8 @@ requires-python = ">=3.12"
 license = "MIT"
 authors = [{ name = "Alex Vervloet" }]
 dependencies = [
-  "numpy==2.5.2",
-  "torch==2.13.0",
+  "numpy==2.5.3",
+  "torch==2.14.1",
 ]
 
 [tool.setuptools.packages.find]
