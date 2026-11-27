@@ -40,7 +40,7 @@ retain a growing KV cache.
 
 ## 1. Setup
 
-You need Python 3.12 or newer. The pins are NumPy 2.5.3 and PyTorch 2.14.1.
+You need Python 3.12 or newer. The pins are NumPy 2.5.5 and PyTorch 2.15.0.
 
 ```bash
 python3 -m venv .venv
@@ -53,8 +53,8 @@ The course never uses a GPU. On Linux or Windows, the official PyTorch CPU index
 downloading CUDA packages:
 
 ```bash
-python -m pip install numpy==2.5.3
-python -m pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install numpy==2.5.5
+python -m pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
 python -m pip install -e . --no-deps
 python check_setup.py
 ```
@@ -322,7 +322,7 @@ for lineage, corpus synchronization, and retrieval data contracts.
 - [On Calibration of Modern Neural Networks](https://arxiv.org/abs/1706.04599)
 - [A White Paper on Neural Network Quantization](https://arxiv.org/abs/2106.08295)
 - [PyTorch installation selector](https://docs.pytorch.org/get-started/locally/)
-- [NumPy 2.5.3 release listing](https://numpy.org/news/)
+- [NumPy 2.5.5 release listing](https://numpy.org/news/)
 
 ## License
 
